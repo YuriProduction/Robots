@@ -1,13 +1,15 @@
-package Russificator.Second;
+package Localization.Languages;
 
+import Localization.LanguageAdapter;
 import java.util.logging.Logger;
 import javax.swing.UIManager;
 
-public class AppRussifier {
 
-  private static final Logger LOG = Logger.getLogger(AppRussifier.class.getName());
+public class Russifier implements LanguageAdapter {
 
-  public static final void runRussifier() {
+  private static final Logger LOG = Logger.getLogger(Russifier.class.getName());
+
+  public final void setLocalLanguage() {
     UIManager.put("AbstractButton.clickText", "клик");
     UIManager.put("AbstractDocument.additionText", "добавление");
     UIManager.put("AbstractDocument.deletionText", "удаление");

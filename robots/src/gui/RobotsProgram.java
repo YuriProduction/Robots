@@ -1,5 +1,6 @@
 package gui;
 
+import Localization.Languages.Russifier;
 import java.awt.Frame;
 
 import javax.swing.SwingUtilities;
@@ -19,7 +20,7 @@ public class RobotsProgram {
       e.printStackTrace();
     }
     SwingUtilities.invokeLater(() -> {
-      MainApplicationFrame frame = new MainApplicationFrame();
+      MainApplicationFrame frame = new MainApplicationFrame(new Russifier());
       frame.pack();
       frame.setVisible(true);
       //разворачивает окно на весь экран
