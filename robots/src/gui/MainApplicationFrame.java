@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import java.awt.event.WindowAdapter;
 import javax.swing.AbstractButton;
 import javax.swing.InputMap;
 import javax.swing.JDesktopPane;
@@ -145,7 +146,7 @@ public class MainApplicationFrame extends JFrame {
     JMenu options = new JMenu("Опции");
     {
       JMenuItem exitItem = new JMenuItem("Выход");
-      setExitEventByTouchButton(this, exitItem);
+      setExitEvent(this, exitItem);
       options.add(exitItem);
     }
 
@@ -156,18 +157,21 @@ public class MainApplicationFrame extends JFrame {
   }
 
 
-  private void setExitEventByTouchButton(final JFrame Frame, final AbstractButton exitItem) {
-    //Благодаря полиморфизму, принимаем некую абстракцию,
-    // которой можно добавить обработчик события выхода
-    // на абстрактном окне
+  private void setExitEvent(final JFrame Frame, final AbstractButton exitItem) {
     exitItem.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         showConfirmMessage(Frame);
       }
     });
-    //устанавливаем на клавишу ESC событие
-    //аналогичное событию, когда мы выходим из приложения
+
+    Frame.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+        showConfirmMessage(Frame);
+      }
+    });
+
     if (exitItem instanceof JMenuItem) {
       ((JMenuItem) exitItem).setAccelerator(KeyStroke
           .getKeyStroke(KeyEvent.VK_ESCAPE, 0));
