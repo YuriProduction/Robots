@@ -108,44 +108,22 @@ public class MainApplicationFrame extends JFrame {
 //    }
 
   private JMenuBar generateMenuBar() {
-    //упростить метод, чтобы меню с айтемами
-    // генерировала одна функция
+    //упростить метод
     JMenuBar menuBar = new JMenuBar();
+    MenuHandler menuHandler = new MenuHandler();
 
-    setMenuItemWithSubtitles(menuBar, new JMenu("Режим отображения"),
-        KeyEvent.VK_V, "Управление режимом отображения приложения",
-        new JMenuItem[]{new JMenuItem("Системная схема", KeyEvent.VK_S),
-            new JMenuItem("Универсальная схема", KeyEvent.VK_S)},
-        new ActionListener[]{(event) -> {
-          setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-          this.invalidate();
-        },
-            (event) -> {
-              setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-              this.invalidate();
-            }}
-    );
-
-    setMenuItemWithSubtitles(menuBar, new JMenu("Тесты"),
-        KeyEvent.VK_T, "Тестовые команды",
-        new JMenuItem[]{new JMenuItem("Сообщение в лог", KeyEvent.VK_S)},
-        new ActionListener[]{(event) -> {
-          Logger.debug("Новая строка");
-        }}
-    );
-    setMenuItemWithSubtitles(menuBar, new JMenu("Опции"),
-        KeyEvent.VK_UNDEFINED, "Команда для закрытия",
-        new JMenuItem[]{new JMenuItem("Выход", KeyEvent.VK_L)},
-        new ActionListener[]{(event) -> {
-          showConfirmMessage(this);
-        }});
+    menuBar.add(menuHandler.generateMappingMenu(this, KeyEvent.VK_V,
+        "Управление режимом отображения приложения"));
+    menuBar.add(menuHandler.generateTestMenu(this, KeyEvent.VK_T, "Тестовые команды"));
+    menuBar.add(
+        menuHandler.generateOptionMenu(this, KeyEvent.VK_UNDEFINED, "Команда для закрытия"));
     return menuBar;
   }
 
+
   private void setMenuItemWithSubtitles(final JMenuBar menuBar, final JMenu menu, int mnemonicEvent
       , String description, final JMenuItem[] subItems, final ActionListener[] listeners) {
-    menu.setMnemonic(mnemonicEvent);
-    menu.getAccessibleContext().setAccessibleDescription(description);
+
     for (int i = 0; i < subItems.length; i++) {
       menu.add(subItems[i]);
       subItems[i].addActionListener(listeners[i]);
@@ -164,7 +142,7 @@ public class MainApplicationFrame extends JFrame {
     });
   }
 
-  private void showConfirmMessage(final JFrame Frame) {
+  void showConfirmMessage(final JFrame Frame) {
     int choice = JOptionPane.showConfirmDialog(
         Frame,
         "Вы уверены, что хотите выйти?",
@@ -176,7 +154,7 @@ public class MainApplicationFrame extends JFrame {
   }
 
 
-  private void setLookAndFeel(String className) {
+  void setLookAndFeel(String className) {
     try {
       UIManager.setLookAndFeel(className);
       SwingUtilities.updateComponentTreeUI(this);
