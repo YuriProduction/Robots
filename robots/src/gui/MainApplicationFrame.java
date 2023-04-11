@@ -3,14 +3,8 @@ package gui;
 import Localization.LanguageAdapter;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
 import java.awt.event.WindowAdapter;
-import javax.swing.AbstractButton;
-import javax.swing.InputMap;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -18,13 +12,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 import log.Logger;
 
 /**
@@ -51,9 +41,8 @@ public class MainApplicationFrame extends JFrame {
 
     //так как расширяет JInternalFrame,
     // значит можно его помещать внутрь основного окна
-    LogWindow logWindow = createLogWindow();
     //добавляем окно
-    addWindow(logWindow);
+    addWindow(createLogWindow());
 
     GameWindow gameWindow = new GameWindow();
     gameWindow.setSize(400, 400);
@@ -110,39 +99,78 @@ public class MainApplicationFrame extends JFrame {
   private JMenuBar generateMenuBar() {
     //упростить метод
     JMenuBar menuBar = new JMenuBar();
-    MenuHandler menuHandler = new MenuHandler();
 
-    menuBar.add(menuHandler.generateMappingMenu(this, KeyEvent.VK_V,
+    menuBar.add(generateMappingMenu(KeyEvent.VK_V,
         "Управление режимом отображения приложения"));
-    menuBar.add(menuHandler.generateTestMenu(this, KeyEvent.VK_T, "Тестовые команды"));
+    menuBar.add(generateTestMenu(KeyEvent.VK_T, "Тестовые команды"));
     menuBar.add(
-        menuHandler.generateOptionMenu(this, KeyEvent.VK_UNDEFINED, "Команда для закрытия"));
+        generateOptionMenu(KeyEvent.VK_UNDEFINED, "Команда для закрытия"));
     return menuBar;
   }
 
-
-  private void setMenuItemWithSubtitles(final JMenuBar menuBar, final JMenu menu, int mnemonicEvent
-      , String description, final JMenuItem[] subItems, final ActionListener[] listeners) {
-
-    for (int i = 0; i < subItems.length; i++) {
-      menu.add(subItems[i]);
-      subItems[i].addActionListener(listeners[i]);
-    }
-    menuBar.add(menu);
-  }
-
-
   private void setExitEventOnMainFrame() {
-    final JFrame curFrame = this;
+    final JFrame currentFrame = this;
     this.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-        showConfirmMessage(curFrame);
+        showConfirmMessage(currentFrame);
       }
     });
   }
 
-  void showConfirmMessage(final JFrame Frame) {
+  private JMenu generateOptionMenu(int mnemonicEvent,
+      String description) {
+    JMenu menu = new JMenu("Опции");
+    menu.setMnemonic(mnemonicEvent);
+    menu.getAccessibleContext().setAccessibleDescription(description);
+    JMenuItem item1 = new JMenuItem("Выход", KeyEvent.VK_L);
+
+    item1.addActionListener(e -> this.showConfirmMessage(this));
+
+    menu.add(item1);
+
+    return menu;
+  }
+
+  private JMenu generateTestMenu(int mnemonicEvent,
+      String description) {
+    JMenu menu = new JMenu("Тесты");
+    menu.setMnemonic(mnemonicEvent);
+    menu.getAccessibleContext().setAccessibleDescription(description);
+    JMenuItem item1 = new JMenuItem("Сообщение в лог", KeyEvent.VK_S);
+
+    item1.addActionListener(e -> Logger.debug("Новая строка"));
+
+    menu.add(item1);
+
+    return menu;
+  }
+
+  private JMenu generateMappingMenu(int mnemonicEvent,
+      String description) {
+    JMenu menu = new JMenu("Режим отображения");
+    menu.setMnemonic(mnemonicEvent);
+    menu.getAccessibleContext().setAccessibleDescription(description);
+    JMenuItem item1 = new JMenuItem("Системная схема", KeyEvent.VK_S);
+    JMenuItem item2 = new JMenuItem("Универсальная схема", KeyEvent.VK_S);
+
+    item1.addActionListener(e -> {
+      this.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      this.invalidate();
+    });
+
+    item2.addActionListener(e -> {
+      setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+      this.invalidate();
+    });
+
+    menu.add(item1);
+    menu.add(item2);
+
+    return menu;
+  }
+
+  private void showConfirmMessage(final JFrame Frame) {
     int choice = JOptionPane.showConfirmDialog(
         Frame,
         "Вы уверены, что хотите выйти?",
@@ -153,8 +181,7 @@ public class MainApplicationFrame extends JFrame {
     }
   }
 
-
-  void setLookAndFeel(String className) {
+  private void setLookAndFeel(String className) {
     try {
       UIManager.setLookAndFeel(className);
       SwingUtilities.updateComponentTreeUI(this);
