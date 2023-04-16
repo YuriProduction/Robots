@@ -1,10 +1,26 @@
 package gui;
 
 import Localization.LanguageAdapter;
+import Serialization.PreferencesDemo;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
+import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -25,6 +41,7 @@ public class MainApplicationFrame extends JFrame {
 
   //окно, которое внутри хранит другие окна
   private final JDesktopPane desktopPane = new JDesktopPane();
+  private final List<JInternalFrame> listOfInternalFrames = new ArrayList<>();
 
   public MainApplicationFrame(LanguageAdapter adapter) {
     //Make the big window be indented 50 pixels from each edge
@@ -37,23 +54,31 @@ public class MainApplicationFrame extends JFrame {
 
     setContentPane(desktopPane);
 
+//    new PreferencesDemo().readXML("logWindow");
+//    new PreferencesDemo().readXML("GameWindow");
+
     //так как расширяет JInternalFrame,
     // значит можно его помещать внутрь основного окна
     //добавляем окно
-    addWindow(createLogWindow());
+    LogWindow logWindow = createLogWindow();
+    logWindow.setName("logWindow");
+    listOfInternalFrames.add(logWindow);
+    addWindow(logWindow);
 
 //    GameWindow gameWindow = new GameWindow();
 //    gameWindow.setSize(400, 400);
-    addWindow(new GameWindow() {
-      @Override
-      public void setSize(int width, int height) {
-        super.setSize(400, 400);
-      }
-    });
+    GameWindow gameWindow = new GameWindow();
+    gameWindow.setSize(400, 400);
+    gameWindow.setName("GameWindow");
+    listOfInternalFrames.add(gameWindow);
+    addWindow(gameWindow);
 
     setJMenuBar(generateMenuBar());
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
+
   }
+
 
   protected LogWindow createLogWindow() {
     LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
@@ -91,7 +116,7 @@ public class MainApplicationFrame extends JFrame {
 //        menuItem = new JMenuItem("Quit");
 //        menuItem.setMnemonic(KeyEvent.VK_Q);
 //        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-//                KeyEvent.VK_Q, ActionEvent.ALT_MASK));
+//        KeyEvent.VK_Q, ActionEvent.ALT_MASK));
 //        menuItem.setActionCommand("quit");
 ////        menuItem.addActionListener(this);
 //        menu.add(menuItem);
@@ -113,7 +138,11 @@ public class MainApplicationFrame extends JFrame {
     this.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-        showConfirmMessage();
+        try {
+          showConfirmMessage();
+        } catch (IOException | BackingStoreException e) {
+          throw new RuntimeException(e);
+        }
       }
     });
   }
@@ -124,7 +153,13 @@ public class MainApplicationFrame extends JFrame {
     menu.getAccessibleContext().setAccessibleDescription("Команда для закрытия");
     JMenuItem item = new JMenuItem("Выход", KeyEvent.VK_L);
 
-    item.addActionListener(e -> showConfirmMessage());
+    item.addActionListener(e -> {
+      try {
+        showConfirmMessage();
+      } catch (IOException | BackingStoreException ex) {
+        throw new RuntimeException(ex);
+      }
+    });
 
     menu.add(item);
 
@@ -167,10 +202,24 @@ public class MainApplicationFrame extends JFrame {
     return menu;
   }
 
-  private void showConfirmMessage() {
+  private void showConfirmMessage() throws IOException, BackingStoreException {
     int choice = JOptionPane.showConfirmDialog(this, "Вы уверены, что хотите выйти?", "Выход",
         JOptionPane.YES_NO_OPTION);
     if (choice == JOptionPane.YES_OPTION) {
+      Preferences userPrefs = Preferences.userNodeForPackage(PreferencesDemo.class);
+
+      for (JInternalFrame internalFrame : listOfInternalFrames) {
+        OutputStream osTree = new BufferedOutputStream(
+            new FileOutputStream(System.getProperty("user.home") + "\\" + internalFrame.getName()));
+        userPrefs.putInt("X", internalFrame.getX());
+        userPrefs.putInt("Y", internalFrame.getY());
+        userPrefs.putInt("width", internalFrame.getWidth());
+        userPrefs.putInt("height", internalFrame.getHeight());
+        userPrefs.put("name", internalFrame.getName());
+        userPrefs.exportSubtree(osTree);
+        osTree.close();
+      }
+
       dispose();
     }
   }
