@@ -1,26 +1,15 @@
 package gui;
 
 import Localization.LanguageAdapter;
-import Serialization.PreferencesDemo;
-import java.awt.Component;
-import java.awt.Container;
+import Serialization.SaveableAndLoadable;
 import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -46,6 +35,7 @@ public class MainApplicationFrame extends JFrame {
   public MainApplicationFrame(LanguageAdapter adapter) {
     //Make the big window be indented 50 pixels from each edge
     //of the screen.
+
     adapter.setLocalLanguage();
     setExitEventOnMainFrame();
     int inset = 50;
@@ -54,28 +44,14 @@ public class MainApplicationFrame extends JFrame {
 
     setContentPane(desktopPane);
 
-//    new PreferencesDemo().readXML("logWindow");
-//    new PreferencesDemo().readXML("GameWindow");
-
-    //так как расширяет JInternalFrame,
-    // значит можно его помещать внутрь основного окна
-    //добавляем окно
-    DataOfJItem dataOfJItem1 = new PreferencesDemo().readXML("logWindow");
-    DataOfJItem dataOfJItem2 = new PreferencesDemo().readXML("GameWindow");
-    LogWindow logWindow = createLogWindow(dataOfJItem1);
-    logWindow.setName("logWindow");
-    listOfInternalFrames.add(logWindow);
+    LogWindow logWindow = createLogWindow("logWindow");
+    GameWindow gameWindow = new GameWindow("GameWindow");
     addWindow(logWindow);
-
-//    GameWindow gameWindow = new GameWindow();
-//    gameWindow.setSize(400, 400);
-    GameWindow gameWindow = new GameWindow();
-    gameWindow.setSize(dataOfJItem2.width(), dataOfJItem2.height());
-    gameWindow.setLocation(dataOfJItem2.X(), dataOfJItem2.Y());
-    gameWindow.setName("GameWindow");
-    listOfInternalFrames.add(gameWindow);
     addWindow(gameWindow);
+    gameWindow.loadData();
 
+    listOfInternalFrames.add(gameWindow);
+    listOfInternalFrames.add(logWindow);
     setJMenuBar(generateMenuBar());
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
@@ -83,10 +59,9 @@ public class MainApplicationFrame extends JFrame {
   }
 
 
-  protected LogWindow createLogWindow(DataOfJItem item) {
-    LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
-    logWindow.setLocation(item.X(), item.Y());
-    logWindow.setSize(item.width(), item.height());
+  protected LogWindow createLogWindow(String name) {
+    LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource(), name);
+    logWindow.loadData();
     setMinimumSize(logWindow.getSize());
     logWindow.pack();
     Logger.debug("Протокол работает");
@@ -97,35 +72,6 @@ public class MainApplicationFrame extends JFrame {
     desktopPane.add(frame);
     frame.setVisible(true);
   }
-
-//    protected JMenuBar createMenuBar() {
-//        JMenuBar menuBar = new JMenuBar();
-// 
-//        //Set up the lone menu.
-//        JMenu menu = new JMenu("Document");
-//        menu.setMnemonic(KeyEvent.VK_D);
-//        menuBar.add(menu);
-// 
-//        //Set up the first menu item.
-//        JMenuItem menuItem = new JMenuItem("New");
-//        menuItem.setMnemonic(KeyEvent.VK_N);
-//        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-//                KeyEvent.VK_N, ActionEvent.ALT_MASK));
-//        menuItem.setActionCommand("new");
-////        menuItem.addActionListener(this);
-//        menu.add(menuItem);
-// 
-//        //Set up the second menu item.
-//        menuItem = new JMenuItem("Quit");
-//        menuItem.setMnemonic(KeyEvent.VK_Q);
-//        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-//        KeyEvent.VK_Q, ActionEvent.ALT_MASK));
-//        menuItem.setActionCommand("quit");
-////        menuItem.addActionListener(this);
-//        menu.add(menuItem);
-// 
-//        return menuBar;
-//    }
 
   private JMenuBar generateMenuBar() {
     //упростить метод
@@ -174,10 +120,8 @@ public class MainApplicationFrame extends JFrame {
     menu.setMnemonic(KeyEvent.VK_T);
     menu.getAccessibleContext().setAccessibleDescription("Тестовые команды");
     JMenuItem item = new JMenuItem("Сообщение в лог", KeyEvent.VK_S);
-
     item.addActionListener(e -> Logger.debug("Новая строка"));
     menu.add(item);
-
     return menu;
   }
 
@@ -209,22 +153,11 @@ public class MainApplicationFrame extends JFrame {
     int choice = JOptionPane.showConfirmDialog(this, "Вы уверены, что хотите выйти?", "Выход",
         JOptionPane.YES_NO_OPTION);
     if (choice == JOptionPane.YES_OPTION) {
-      Preferences userPrefs = Preferences.userNodeForPackage(PreferencesDemo.class);
-
       for (JInternalFrame internalFrame : listOfInternalFrames) {
-        OutputStream osTree = new BufferedOutputStream(
-            new FileOutputStream(
-                System.getProperty("user.home") + "\\Preferencess\\" + internalFrame.getName()
-                    + ".xml"));
-        userPrefs.putInt("X", internalFrame.getX());
-        userPrefs.putInt("Y", internalFrame.getY());
-        userPrefs.putInt("width", internalFrame.getWidth());
-        userPrefs.putInt("height", internalFrame.getHeight());
-        userPrefs.put("name", internalFrame.getName());
-        userPrefs.exportSubtree(osTree);
-        osTree.close();
+        if (internalFrame instanceof SaveableAndLoadable) {
+          ((SaveableAndLoadable) internalFrame).saveData();
+        }
       }
-
       dispose();
     }
   }
@@ -235,7 +168,6 @@ public class MainApplicationFrame extends JFrame {
       SwingUtilities.updateComponentTreeUI(this);
     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
              UnsupportedLookAndFeelException e) {
-      // just ignore
     }
   }
 }
