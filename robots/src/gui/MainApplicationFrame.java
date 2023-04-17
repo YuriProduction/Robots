@@ -3,7 +3,6 @@ package gui;
 import Localization.LanguageAdapter;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -18,6 +17,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import log.Logger;
+
 
 /**
  * Что требуется сделать: 1. Метод создания меню перегружен функционалом и трудно читается. Следует
