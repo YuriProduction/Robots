@@ -3,6 +3,8 @@ package gui;
 import Localization.LanguageAdapter;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import javax.swing.JDesktopPane;
@@ -41,15 +43,7 @@ public class MainApplicationFrame extends JFrame {
     // значит можно его помещать внутрь основного окна
     //добавляем окно
     addWindow(createLogWindow());
-
-//    GameWindow gameWindow = new GameWindow();
-//    gameWindow.setSize(400, 400);
-    addWindow(new GameWindow() {
-      @Override
-      public void setSize(int width, int height) {
-        super.setSize(400, 400);
-      }
-    });
+    addWindow(new GameWindow(), 400, 400);
 
     setJMenuBar(generateMenuBar());
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -68,6 +62,11 @@ public class MainApplicationFrame extends JFrame {
   protected void addWindow(JInternalFrame frame) {
     desktopPane.add(frame);
     frame.setVisible(true);
+  }
+
+  protected void addWindow(JInternalFrame frame, int w, int h) {
+    frame.setSize(w, h);
+    addWindow(frame);
   }
 
 //    protected JMenuBar createMenuBar() {
@@ -122,11 +121,7 @@ public class MainApplicationFrame extends JFrame {
     JMenu menu = new JMenu("Опции");
     menu.setMnemonic(KeyEvent.VK_UNDEFINED);
     menu.getAccessibleContext().setAccessibleDescription("Команда для закрытия");
-    JMenuItem item = new JMenuItem("Выход", KeyEvent.VK_L);
-
-    item.addActionListener(e -> showConfirmMessage());
-
-    menu.add(item);
+    menu.add(generateMenuItem("Выход", KeyEvent.VK_L, e -> showConfirmMessage()));
 
     return menu;
   }
@@ -135,11 +130,7 @@ public class MainApplicationFrame extends JFrame {
     JMenu menu = new JMenu("Тесты");
     menu.setMnemonic(KeyEvent.VK_T);
     menu.getAccessibleContext().setAccessibleDescription("Тестовые команды");
-    JMenuItem item = new JMenuItem("Сообщение в лог", KeyEvent.VK_S);
-
-    item.addActionListener(e -> Logger.debug("Новая строка"));
-    menu.add(item);
-
+    menu.add(generateMenuItem("Сообщение в лог", KeyEvent.VK_S, e -> Logger.debug("Новая строка")));
     return menu;
   }
 
@@ -148,23 +139,24 @@ public class MainApplicationFrame extends JFrame {
     menu.setMnemonic(KeyEvent.VK_V);
     menu.getAccessibleContext()
         .setAccessibleDescription("Управление режимом отображения приложения");
-    JMenuItem item1 = new JMenuItem("Системная схема", KeyEvent.VK_S);
-    JMenuItem item2 = new JMenuItem("Универсальная схема", KeyEvent.VK_S);
 
-    item1.addActionListener(e -> {
+    menu.add(generateMenuItem("Системная схема", KeyEvent.VK_S, e -> {
       setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
       invalidate();
-    });
-
-    item2.addActionListener(e -> {
+    }));
+    menu.add(generateMenuItem("Универсальная схема", KeyEvent.VK_S, e -> {
       setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
       invalidate();
-    });
-
-    menu.add(item1);
-    menu.add(item2);
+    }));
 
     return menu;
+  }
+
+  private JMenuItem generateMenuItem(String name, int keyEvent,
+      final ActionListener actionListener) {
+    JMenuItem item = new JMenuItem(name, keyEvent);
+    item.addActionListener(actionListener);
+    return item;
   }
 
   private void showConfirmMessage() {
