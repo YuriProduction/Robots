@@ -60,7 +60,9 @@ public class MainApplicationFrame extends JFrame {
     //так как расширяет JInternalFrame,
     // значит можно его помещать внутрь основного окна
     //добавляем окно
-    LogWindow logWindow = createLogWindow();
+    DataOfJItem dataOfJItem1 = new PreferencesDemo().readXML("logWindow");
+    DataOfJItem dataOfJItem2 = new PreferencesDemo().readXML("GameWindow");
+    LogWindow logWindow = createLogWindow(dataOfJItem1);
     logWindow.setName("logWindow");
     listOfInternalFrames.add(logWindow);
     addWindow(logWindow);
@@ -68,7 +70,8 @@ public class MainApplicationFrame extends JFrame {
 //    GameWindow gameWindow = new GameWindow();
 //    gameWindow.setSize(400, 400);
     GameWindow gameWindow = new GameWindow();
-    gameWindow.setSize(400, 400);
+    gameWindow.setSize(dataOfJItem2.width(), dataOfJItem2.height());
+    gameWindow.setLocation(dataOfJItem2.X(), dataOfJItem2.Y());
     gameWindow.setName("GameWindow");
     listOfInternalFrames.add(gameWindow);
     addWindow(gameWindow);
@@ -80,10 +83,10 @@ public class MainApplicationFrame extends JFrame {
   }
 
 
-  protected LogWindow createLogWindow() {
+  protected LogWindow createLogWindow(DataOfJItem item) {
     LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
-    logWindow.setLocation(10, 10);
-    logWindow.setSize(300, 800);
+    logWindow.setLocation(item.X(), item.Y());
+    logWindow.setSize(item.width(), item.height());
     setMinimumSize(logWindow.getSize());
     logWindow.pack();
     Logger.debug("Протокол работает");

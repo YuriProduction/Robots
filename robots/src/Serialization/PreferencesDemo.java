@@ -1,5 +1,7 @@
 package Serialization;
 
+import gui.DataOfJItem;
+import java.awt.image.DataBuffer;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -57,10 +59,14 @@ public class PreferencesDemo {
 
   }
 
-  public void readXML(String name) {
+  public DataOfJItem readXML(String name) {
     try {
-      mainn();
-      File xmlFile = new File(System.getProperty("user.home") + "\\" + name);
+      int X = 10;
+      int Y = 10;
+      int width = 500;
+      int height = 500;
+      String namee = "123";
+      File xmlFile = new File(System.getProperty("user.home") + "\\Preferencess\\" + name + ".xml");
       DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
       Document doc = dBuilder.parse(xmlFile);
@@ -71,11 +77,27 @@ public class PreferencesDemo {
         System.out.println("\nCurrent Element :" + nNode.getNodeName());
         if (nNode.getNodeType() == Node.ELEMENT_NODE) {
           Element eElement = (Element) nNode;
-          System.out.println("Value : " + eElement.getAttribute("value"));
+          if (eElement.getAttribute("key").equals("X")) {
+            X = Integer.parseInt(eElement.getAttribute("value"));
+          }
+          if (eElement.getAttribute("key").equals("Y")) {
+            Y = Integer.parseInt(eElement.getAttribute("value"));
+          }
+          if (eElement.getAttribute("key").equals("width")) {
+            width = Integer.parseInt(eElement.getAttribute("value"));
+          }
+          if (eElement.getAttribute("key").equals("height")) {
+            height = Integer.parseInt(eElement.getAttribute("value"));
+          }
+          if (eElement.getAttribute("key").equals("name")) {
+            namee = eElement.getAttribute("value");
+          }
         }
       }
+      return new DataOfJItem(X, Y, width, height, name);
     } catch (Exception e) {
       e.printStackTrace();
     }
+    return new DataOfJItem(10, 10, 300, 300, "default");
   }
 }
