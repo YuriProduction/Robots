@@ -39,7 +39,7 @@ import log.Logger;
  */
 public class MainApplicationFrame extends JFrame {
 
-  //окно, которое внутри хранит другие окна
+  // окно, которое внутри хранит другие окна
   private final JDesktopPane desktopPane = new JDesktopPane();
   private final List<JInternalFrame> listOfInternalFrames = new ArrayList<>();
 
@@ -210,7 +210,9 @@ public class MainApplicationFrame extends JFrame {
 
       for (JInternalFrame internalFrame : listOfInternalFrames) {
         OutputStream osTree = new BufferedOutputStream(
-            new FileOutputStream(System.getProperty("user.home") + "\\" + internalFrame.getName()));
+            new FileOutputStream(
+                System.getProperty("user.home") + "\\Preferencess\\" + internalFrame.getName()
+                    + ".xml"));
         userPrefs.putInt("X", internalFrame.getX());
         userPrefs.putInt("Y", internalFrame.getY());
         userPrefs.putInt("width", internalFrame.getWidth());
