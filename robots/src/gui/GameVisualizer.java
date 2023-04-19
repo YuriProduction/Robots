@@ -22,6 +22,14 @@ public class GameVisualizer extends JPanel {
     return timer;
   }
 
+  public double getM_robotPositionX() {
+    return m_robotPositionX;
+  }
+
+  public double getM_robotPositionY() {
+    return m_robotPositionY;
+  }
+
   private volatile double m_robotPositionX = 100;
   private volatile double m_robotPositionY = 100;
   private volatile double m_robotDirection = 0;
@@ -34,7 +42,7 @@ public class GameVisualizer extends JPanel {
 
   public GameVisualizer() {
 
-    //по таймеру проверяем изменения
+    //по таймеру перерисовываем
     m_timer.schedule(new TimerTask() {
       @Override
       public void run() {
@@ -84,14 +92,14 @@ public class GameVisualizer extends JPanel {
 
     //по теореме Пифагора расстояние от
     // нашей точки до робота
-    double distance = distance(m_targetPositionX, m_targetPositionY,
-        m_robotPositionX, m_robotPositionY);
+    double distance = distance(m_targetPositionX, m_targetPositionY, m_robotPositionX,
+        m_robotPositionY);
     if (distance < 0.5) {
       return;
     }
     //это просто скорость
     double velocity = maxVelocity;
-    //угол, на который надо развернуться?
+    //угол, на который надо развернуться, в полярных координатах
     double angleToTarget = angleTo(m_robotPositionX, m_robotPositionY, m_targetPositionX,
         m_targetPositionY);
     //это угловая скорость
@@ -120,15 +128,13 @@ public class GameVisualizer extends JPanel {
   private void moveRobot(double velocity, double angularVelocity, double duration) {
     velocity = applyLimits(velocity, 0, maxVelocity);
     angularVelocity = applyLimits(angularVelocity, -maxAngularVelocity, maxAngularVelocity);
-    double newX = m_robotPositionX + velocity / angularVelocity *
-        (Math.sin(m_robotDirection + angularVelocity * duration) -
-            Math.sin(m_robotDirection));
+    double newX = m_robotPositionX + velocity / angularVelocity * (
+        Math.sin(m_robotDirection + angularVelocity * duration) - Math.sin(m_robotDirection));
     if (!Double.isFinite(newX)) {
       newX = m_robotPositionX + velocity * duration * Math.cos(m_robotDirection);
     }
-    double newY = m_robotPositionY - velocity / angularVelocity *
-        (Math.cos(m_robotDirection + angularVelocity * duration) -
-            Math.cos(m_robotDirection));
+    double newY = m_robotPositionY - velocity / angularVelocity * (
+        Math.cos(m_robotDirection + angularVelocity * duration) - Math.cos(m_robotDirection));
     if (!Double.isFinite(newY)) {
       newY = m_robotPositionY + velocity * duration * Math.sin(m_robotDirection);
     }

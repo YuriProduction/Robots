@@ -1,6 +1,7 @@
 package gui;
 
 import Localization.LanguageAdapter;
+import gui.Protocolling.RobotCoordinatesViewer;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
@@ -13,6 +14,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -43,7 +45,9 @@ public class MainApplicationFrame extends JFrame {
     // значит можно его помещать внутрь основного окна
     //добавляем окно
     addWindow(createLogWindow());
-    addWindow(new GameWindow(), 400, 400);
+    GameWindow gameWindow = new GameWindow();
+    addWindow(gameWindow, 400, 400);
+    addWindow(new RobotCoordinatesViewer(gameWindow), 400, 400);
 
     setJMenuBar(generateMenuBar());
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
