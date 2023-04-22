@@ -7,6 +7,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.TextArea;
 
+import java.beans.PropertyVetoException;
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -56,10 +57,14 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
   }
 
   @Override
-  public void loadData() {
+  public void loadData() throws PropertyVetoException {
     DataOfFrame dataOfThisFrame = new PreferencesDemo().readXML(this.getName());
     this.setLocation(dataOfThisFrame.X(), dataOfThisFrame.Y());
     this.setSize(dataOfThisFrame.width(), dataOfThisFrame.height());
+    this.setIcon(dataOfThisFrame.Icon());
+    System.out.println("dataOfThisFrame.Icon(): " + dataOfThisFrame.Icon());
+    System.out.println("Start: logWindow isIcon " + this.isIcon());
+
   }
 
   @Override
@@ -73,6 +78,8 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
     userPrefs.putInt("Y", this.getY());
     userPrefs.putInt("width", this.getWidth());
     userPrefs.putInt("height", this.getHeight());
+    System.out.println("Finish: logWindow isIcon " + this.isIcon());
+    userPrefs.putBoolean("Icon", this.isIcon());
     userPrefs.put("name", this.getName());
     userPrefs.exportSubtree(osTree);
     osTree.close();

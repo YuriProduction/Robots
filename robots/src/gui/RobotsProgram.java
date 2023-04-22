@@ -3,6 +3,7 @@ package gui;
 import Localization.Languages.Russifier;
 import java.awt.Frame;
 
+import java.beans.PropertyVetoException;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -20,7 +21,12 @@ public class RobotsProgram {
       e.printStackTrace();
     }
     SwingUtilities.invokeLater(() -> {
-      MainApplicationFrame frame = new MainApplicationFrame(new Russifier());
+      MainApplicationFrame frame = null;
+      try {
+        frame = new MainApplicationFrame(new Russifier());
+      } catch (PropertyVetoException e) {
+        throw new RuntimeException(e);
+      }
       frame.pack();
       frame.setVisible(true);
       //разворачивает окно на весь экран

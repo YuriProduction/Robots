@@ -11,8 +11,10 @@ import org.w3c.dom.NodeList;
 public class PreferencesDemo {
 
   public DataOfFrame readXML(String name) {
+    Node nNode;
     try {
       //дефолтные значения
+      boolean isIcon = false;
       int X = 10, Y = 10;
       int width = 500, height = 500;
       File xmlFile = new File(System.getProperty("user.home") + "\\Preferencess\\" + name + ".xml");
@@ -23,7 +25,7 @@ public class PreferencesDemo {
       doc.getDocumentElement().normalize();
       NodeList nList = doc.getElementsByTagName("entry");
       for (int temp = 0; temp < nList.getLength(); temp++) {
-        Node nNode = nList.item(temp);
+        nNode = nList.item(temp);
         if (nNode.getNodeType() == Node.ELEMENT_NODE) {
           Element eElement = (Element) nNode;
           if (eElement.getAttribute("key").equals("X")) {
@@ -31,6 +33,9 @@ public class PreferencesDemo {
           }
           if (eElement.getAttribute("key").equals("Y")) {
             Y = Integer.parseInt(eElement.getAttribute("value"));
+          }
+          if (eElement.getAttribute("key").equals("Icon")) {
+            isIcon = Boolean.parseBoolean(eElement.getAttribute("value"));
           }
           if (eElement.getAttribute("key").equals("width")) {
             width = Integer.parseInt(eElement.getAttribute("value"));
@@ -40,10 +45,10 @@ public class PreferencesDemo {
           }
         }
       }
-      return new DataOfFrame(X, Y, width, height);
+      return new DataOfFrame(X, Y, width, height, isIcon);
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return new DataOfFrame(10, 10, 300, 300);
+    return new DataOfFrame(10, 10, 300, 300, false);
   }
 }

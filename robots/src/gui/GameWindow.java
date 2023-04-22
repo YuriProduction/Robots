@@ -5,6 +5,7 @@ import Serialization.PreferencesDemo;
 import Serialization.SaveableAndLoadable;
 import java.awt.BorderLayout;
 
+import java.beans.PropertyVetoException;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,10 +31,11 @@ public class GameWindow extends JInternalFrame implements SaveableAndLoadable {
   }
 
   @Override
-  public void loadData() {
+  public void loadData() throws PropertyVetoException {
     DataOfFrame dataOfThisFrame = new PreferencesDemo().readXML(this.getName());
     this.setLocation(dataOfThisFrame.X(), dataOfThisFrame.Y());
     this.setSize(dataOfThisFrame.width(), dataOfThisFrame.height());
+    this.setIcon(dataOfThisFrame.Icon());
   }
 
   @Override
@@ -47,6 +49,7 @@ public class GameWindow extends JInternalFrame implements SaveableAndLoadable {
     userPrefs.putInt("Y", this.getY());
     userPrefs.putInt("width", this.getWidth());
     userPrefs.putInt("height", this.getHeight());
+    userPrefs.putBoolean("Icon", this.isIcon());
     userPrefs.put("name", this.getName());
     userPrefs.exportSubtree(osTree);
     osTree.close();

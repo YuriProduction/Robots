@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
+import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class MainApplicationFrame extends JFrame {
   private final JDesktopPane desktopPane = new JDesktopPane();
   private final List<JInternalFrame> listOfInternalFrames = new ArrayList<>();
 
-  public MainApplicationFrame(LanguageAdapter adapter) {
+  public MainApplicationFrame(LanguageAdapter adapter) throws PropertyVetoException {
     //Make the big window be indented 50 pixels from each edge
     //of the screen.
 
@@ -49,7 +50,7 @@ public class MainApplicationFrame extends JFrame {
     addWindow(logWindow);
     addWindow(gameWindow);
     gameWindow.loadData();
-
+    logWindow.loadData();
     listOfInternalFrames.add(gameWindow);
     listOfInternalFrames.add(logWindow);
     setJMenuBar(generateMenuBar());
@@ -59,9 +60,8 @@ public class MainApplicationFrame extends JFrame {
   }
 
 
-  protected LogWindow createLogWindow(String name) {
+  protected LogWindow createLogWindow(String name) throws PropertyVetoException {
     LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource(), name);
-    logWindow.loadData();
     setMinimumSize(logWindow.getSize());
     logWindow.pack();
     Logger.debug("Протокол работает");
