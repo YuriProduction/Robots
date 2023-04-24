@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -66,8 +67,11 @@ public class GameVisualizer extends JPanel {
     addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
-        setTargetPosition(e.getPoint());
-        //обновляем координаты
+        Point point = e.getPoint();
+        double scale = Toolkit.getDefaultToolkit().getScreenResolution() / 150.0;
+        point.x = (int) (point.x / scale);
+        point.y = (int) (point.y / scale);
+        setTargetPosition(point);
         repaint();
       }
     });
