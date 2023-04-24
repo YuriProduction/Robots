@@ -30,6 +30,14 @@ public class GameVisualizer extends JPanel {
     return m_robotPositionY;
   }
 
+  public void setM_robotPositionX(double m_robotPositionX) {
+    this.m_robotPositionX = m_robotPositionX;
+  }
+
+  public void setM_robotPositionY(double m_robotPositionY) {
+    this.m_robotPositionY = m_robotPositionY;
+  }
+
   private volatile double m_robotPositionX = 100;
   private volatile double m_robotPositionY = 100;
   private volatile double m_robotDirection = 0;
@@ -104,12 +112,20 @@ public class GameVisualizer extends JPanel {
         m_targetPositionY);
     //это угловая скорость
     double angularVelocity = 0;
-    //Проверяем, угол отрицательный или положительный
-    if (angleToTarget > m_robotDirection) {
+    if (angleToTarget - m_robotDirection > Math.PI) {
+      angularVelocity = -maxAngularVelocity;
+    }
+    if (angleToTarget - m_robotDirection < -Math.PI) {
       angularVelocity = maxAngularVelocity;
     }
-    if (angleToTarget < m_robotDirection) {
+    if (angleToTarget - m_robotDirection < Math.PI && angleToTarget - m_robotDirection >= 0) {
+      angularVelocity = maxAngularVelocity;
+    }
+    if (angleToTarget - m_robotDirection < 0 && angleToTarget - m_robotDirection >= -Math.PI) {
       angularVelocity = -maxAngularVelocity;
+    }
+    if (unreachable()) {
+      angularVelocity = 0;
     }
 
     moveRobot(velocity, angularVelocity, 10);
@@ -175,8 +191,22 @@ public class GameVisualizer extends JPanel {
   }
 
   private void drawRobot(Graphics2D g, int x, int y, double direction) {
-    int robotCenterX = round(m_robotPositionX);
-    int robotCenterY = round(m_robotPositionY);
+
+    if (x < 0) {
+      x = 0;
+    }
+    if (y < 0) {
+      y = 0;
+    }
+    if (y > getHeight()) {
+      y = getHeight();
+    }
+    if (x > getWidth()) {
+      x = getWidth();
+    }
+
+    int robotCenterX = x;
+    int robotCenterY = y;
     AffineTransform t = AffineTransform.getRotateInstance(direction, robotCenterX, robotCenterY);
     g.setTransform(t);
     g.setColor(Color.MAGENTA);
@@ -196,5 +226,22 @@ public class GameVisualizer extends JPanel {
     fillOval(g, x, y, 5, 5);
     g.setColor(Color.BLACK);
     drawOval(g, x, y, 5, 5);
+  }
+
+  private boolean unreachable() {
+    double dx = m_targetPositionX - m_robotPositionX;
+    double dy = m_targetPositionY - m_robotPositionY;
+
+    double new_dx = Math.cos(m_robotDirection) * dx + Math.sin(m_robotDirection) * dy;
+    double new_dy = Math.cos(m_robotDirection) * dy - Math.sin(m_robotDirection) * dx;
+
+    double y_center = maxVelocity / maxAngularVelocity;
+    double dist1 = (Math.sqrt(Math.pow((new_dx), 2) + Math.pow(new_dy - y_center, 2)));
+    double dist2 = (Math.sqrt(Math.pow((new_dx), 2) + Math.pow(new_dy + y_center, 2)));
+
+    if (dist1 > maxVelocity / maxAngularVelocity && dist2 > maxVelocity / maxAngularVelocity) {
+      return false;
+    }
+    return true;
   }
 }

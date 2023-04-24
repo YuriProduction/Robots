@@ -17,8 +17,16 @@ public class RobotCoordinatesViewer extends JInternalFrame {
     timer.schedule(new TimerTask() {
       @Override
       public void run() {
-        area.setText("X = " + (int) gameWindow.getM_visualizer().getM_robotPositionX()
-            + " \tY = " + (int) gameWindow.getM_visualizer().getM_robotPositionY());
+        int x = (int) gameWindow.getM_visualizer().getM_robotPositionX();
+        int y = (int) gameWindow.getM_visualizer().getM_robotPositionY();
+        area.setText("X = " + x
+            + " \tY = " + y);
+//        if (x < 0) {
+//          gameWindow.getM_visualizer().setM_robotPositionX(20);
+//        }
+//        if (y < 0) {
+//          gameWindow.getM_visualizer().setM_robotPositionY(20);
+//        }
 
       }
     }, 0, 5);
