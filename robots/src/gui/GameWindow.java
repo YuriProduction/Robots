@@ -2,7 +2,7 @@ package gui;
 
 import Serialization.DataOfFrame;
 import Serialization.PreferencesDemo;
-import Serialization.SaveableAndLoadable;
+import Serialization.Changeable;
 import java.awt.BorderLayout;
 
 import java.beans.PropertyVetoException;
@@ -15,7 +15,7 @@ import java.util.prefs.Preferences;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
-public class GameWindow extends JInternalFrame implements SaveableAndLoadable {
+public class GameWindow extends JInternalFrame implements Changeable {
 
   private final GameVisualizer m_visualizer;
 
@@ -31,7 +31,7 @@ public class GameWindow extends JInternalFrame implements SaveableAndLoadable {
   }
 
   @Override
-  public void loadData() throws PropertyVetoException {
+  public void load() throws PropertyVetoException {
     DataOfFrame dataOfThisFrame = new PreferencesDemo().readXML(this.getName());
     this.setLocation(dataOfThisFrame.X(), dataOfThisFrame.Y());
     this.setSize(dataOfThisFrame.width(), dataOfThisFrame.height());
@@ -39,7 +39,7 @@ public class GameWindow extends JInternalFrame implements SaveableAndLoadable {
   }
 
   @Override
-  public void saveData() throws IOException, BackingStoreException {
+  public void save() throws IOException, BackingStoreException {
     Preferences userPrefs = Preferences.userNodeForPackage(PreferencesDemo.class);
     OutputStream osTree = new BufferedOutputStream(
         new FileOutputStream(

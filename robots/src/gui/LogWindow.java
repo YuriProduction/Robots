@@ -2,14 +2,13 @@ package gui;
 
 import Serialization.DataOfFrame;
 import Serialization.PreferencesDemo;
-import Serialization.SaveableAndLoadable;
+import Serialization.Changeable;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.TextArea;
 
 import java.beans.PropertyVetoException;
 import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22,7 +21,7 @@ import log.LogChangeListener;
 import log.LogEntry;
 import log.LogWindowSource;
 
-public class LogWindow extends JInternalFrame implements LogChangeListener, SaveableAndLoadable {
+public class LogWindow extends JInternalFrame implements LogChangeListener, Changeable {
 
   private LogWindowSource m_logSource;
   private TextArea m_logContent;
@@ -57,7 +56,7 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
   }
 
   @Override
-  public void loadData() throws PropertyVetoException {
+  public void load() throws PropertyVetoException {
     DataOfFrame dataOfThisFrame = new PreferencesDemo().readXML(this.getName());
     this.setLocation(dataOfThisFrame.X(), dataOfThisFrame.Y());
     this.setSize(dataOfThisFrame.width(), dataOfThisFrame.height());
@@ -68,7 +67,7 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
   }
 
   @Override
-  public void saveData() throws IOException, BackingStoreException {
+  public void save() throws IOException, BackingStoreException {
     Preferences userPrefs = Preferences.userNodeForPackage(PreferencesDemo.class);
     OutputStream osTree = new BufferedOutputStream(
         new FileOutputStream(

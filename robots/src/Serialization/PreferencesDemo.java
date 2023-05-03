@@ -24,24 +24,27 @@ public class PreferencesDemo {
       Document doc = dBuilder.parse(xmlFile);
       doc.getDocumentElement().normalize();
       NodeList nList = doc.getElementsByTagName("entry");
+
       for (int temp = 0; temp < nList.getLength(); temp++) {
         nNode = nList.item(temp);
         if (nNode.getNodeType() == Node.ELEMENT_NODE) {
           Element eElement = (Element) nNode;
-          if (eElement.getAttribute("key").equals("X")) {
-            X = Integer.parseInt(eElement.getAttribute("value"));
-          }
-          if (eElement.getAttribute("key").equals("Y")) {
-            Y = Integer.parseInt(eElement.getAttribute("value"));
-          }
-          if (eElement.getAttribute("key").equals("Icon")) {
-            isIcon = Boolean.parseBoolean(eElement.getAttribute("value"));
-          }
-          if (eElement.getAttribute("key").equals("width")) {
-            width = Integer.parseInt(eElement.getAttribute("value"));
-          }
-          if (eElement.getAttribute("key").equals("height")) {
-            height = Integer.parseInt(eElement.getAttribute("value"));
+          switch (eElement.getAttribute("key")) {
+            case "X":
+              X = Integer.parseInt(eElement.getAttribute("value"));
+              break;
+            case "Y":
+              Y = Integer.parseInt(eElement.getAttribute("value"));
+              break;
+            case "Icon":
+              isIcon = Boolean.parseBoolean(eElement.getAttribute("value"));
+              break;
+            case "width":
+              width = Integer.parseInt(eElement.getAttribute("value"));
+              break;
+            case "height":
+              height = Integer.parseInt(eElement.getAttribute("value"));
+              break;
           }
         }
       }

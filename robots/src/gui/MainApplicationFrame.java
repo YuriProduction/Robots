@@ -1,7 +1,7 @@
 package gui;
 
 import Localization.LanguageAdapter;
-import Serialization.SaveableAndLoadable;
+import Serialization.Changeable;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -31,7 +31,7 @@ public class MainApplicationFrame extends JFrame {
 
   // окно, которое внутри хранит другие окна
   private final JDesktopPane desktopPane = new JDesktopPane();
-  private final List<JInternalFrame> listOfInternalFrames = new ArrayList<>();
+  private final List<Changeable> internalFrames = new ArrayList<>();
 
   public MainApplicationFrame(LanguageAdapter adapter) throws PropertyVetoException {
     //Make the big window be indented 50 pixels from each edge
@@ -49,13 +49,24 @@ public class MainApplicationFrame extends JFrame {
     GameWindow gameWindow = new GameWindow("GameWindow");
     addWindow(logWindow);
     addWindow(gameWindow);
-    gameWindow.loadData();
-    logWindow.loadData();
-    listOfInternalFrames.add(gameWindow);
-    listOfInternalFrames.add(logWindow);
+    internalFrames.add(gameWindow);
+    internalFrames.add(logWindow);
+    recoverFramesData();
     setJMenuBar(generateMenuBar());
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
+
+  }
+
+  private void recoverFramesData() {
+    for (Changeable frame : internalFrames) {
+      try {
+        frame.load();
+      } catch (PropertyVetoException exception) {
+        System.out.println("Can not load data");
+        System.exit(-1);
+      }
+    }
 
   }
 
@@ -153,10 +164,8 @@ public class MainApplicationFrame extends JFrame {
     int choice = JOptionPane.showConfirmDialog(this, "Вы уверены, что хотите выйти?", "Выход",
         JOptionPane.YES_NO_OPTION);
     if (choice == JOptionPane.YES_OPTION) {
-      for (JInternalFrame internalFrame : listOfInternalFrames) {
-        if (internalFrame instanceof SaveableAndLoadable) {
-          ((SaveableAndLoadable) internalFrame).saveData();
-        }
+      for (Changeable internalFrame : internalFrames) {
+        internalFrame.save();
       }
       dispose();
     }
