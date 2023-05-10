@@ -29,9 +29,9 @@ public class GameView extends JPanel implements interactiveWithModel {
   public void paint(Graphics g) {
     super.paint(g);
     Graphics2D g2d = (Graphics2D) g;
-    drawRobot(g2d, model.round(model.getM_robotPositionX()),
-        model.round(model.getM_robotPositionY()), model.getM_robotDirection(this));
-    drawTarget(g2d, model.getM_targetPositionX(this), model.getM_targetPositionY(this));
+    drawRobot(g2d, GeometryComputor.round(model.getRobot().robotPosition.positionX),
+        GeometryComputor.round(model.getRobot().robotPosition.positionY), model.getRobot().m_robotDirection);
+    drawTarget(g2d, model.getRobot().robotTargetPosition.targetX, model.getRobot().robotTargetPosition.targetY);
   }
 
   private final GameModel model = new GameModel();
