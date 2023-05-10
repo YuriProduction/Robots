@@ -39,12 +39,9 @@ public class MainApplicationFrame extends JFrame {
 
     setContentPane(desktopPane);
 
-    //так как расширяет JInternalFrame,
-    // значит можно его помещать внутрь основного окна
-    //добавляем окно
     addWindow(createLogWindow());
-    addWindow(new GameWindow(), 400, 400);
-
+    GameWindow gameWindow = new GameWindow();
+    addWindow(gameWindow, 400, 400);
     setJMenuBar(generateMenuBar());
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
   }
