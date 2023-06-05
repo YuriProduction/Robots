@@ -51,6 +51,7 @@ public class MainApplicationFrame extends JFrame {
     addWindow(gameWindow);
     internalFrames.add(gameWindow);
     internalFrames.add(logWindow);
+    System.out.println(internalFrames.size());
     recoverFramesData();
     setJMenuBar(generateMenuBar());
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -71,10 +72,10 @@ public class MainApplicationFrame extends JFrame {
   }
 
 
-  protected LogWindow createLogWindow(String name) throws PropertyVetoException {
+  protected LogWindow createLogWindow(String name) {
     LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource(), name);
-    setMinimumSize(logWindow.getSize());
-    logWindow.pack();
+    //setMinimumSize(logWindow.getSize());
+    //logWindow.pack();
     Logger.debug("Протокол работает");
     return logWindow;
   }

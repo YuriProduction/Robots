@@ -1,5 +1,6 @@
 package gui;
 
+import Serialization.AbstractJInternalFrameSerializator;
 import Serialization.DataOfFrame;
 import Serialization.PreferencesDemo;
 import Serialization.Changeable;
@@ -15,7 +16,7 @@ import java.util.prefs.Preferences;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
-public class GameWindow extends JInternalFrame implements Changeable {
+public class GameWindow extends AbstractJInternalFrameSerializator {
 
   private final GameVisualizer m_visualizer;
 
@@ -28,30 +29,5 @@ public class GameWindow extends JInternalFrame implements Changeable {
     //добавляем окно в панель контента
     getContentPane().add(panel);
     pack();
-  }
-
-  @Override
-  public void load() throws PropertyVetoException {
-    DataOfFrame dataOfThisFrame = new PreferencesDemo().readXML(this.getName());
-    this.setLocation(dataOfThisFrame.X(), dataOfThisFrame.Y());
-    this.setSize(dataOfThisFrame.width(), dataOfThisFrame.height());
-    this.setIcon(dataOfThisFrame.Icon());
-  }
-
-  @Override
-  public void save() throws IOException, BackingStoreException {
-    Preferences userPrefs = Preferences.userNodeForPackage(PreferencesDemo.class);
-    OutputStream osTree = new BufferedOutputStream(
-        new FileOutputStream(
-            System.getProperty("user.home") + "\\Preferencess\\" + this.getName()
-                + ".xml"));
-    userPrefs.putInt("X", this.getX());
-    userPrefs.putInt("Y", this.getY());
-    userPrefs.putInt("width", this.getWidth());
-    userPrefs.putInt("height", this.getHeight());
-    userPrefs.putBoolean("Icon", this.isIcon());
-    userPrefs.put("name", this.getName());
-    userPrefs.exportSubtree(osTree);
-    osTree.close();
   }
 }

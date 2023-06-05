@@ -1,5 +1,6 @@
 package gui;
 
+import Serialization.AbstractJInternalFrameSerializator;
 import Serialization.DataOfFrame;
 import Serialization.PreferencesDemo;
 import Serialization.Changeable;
@@ -21,7 +22,7 @@ import log.LogChangeListener;
 import log.LogEntry;
 import log.LogWindowSource;
 
-public class LogWindow extends JInternalFrame implements LogChangeListener, Changeable {
+public class LogWindow extends AbstractJInternalFrameSerializator implements LogChangeListener {
 
   private LogWindowSource m_logSource;
   private TextArea m_logContent;
@@ -53,34 +54,5 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Chan
   @Override
   public void onLogChanged() {
     EventQueue.invokeLater(this::updateLogContent);
-  }
-
-  @Override
-  public void load() throws PropertyVetoException {
-    DataOfFrame dataOfThisFrame = new PreferencesDemo().readXML(this.getName());
-    this.setLocation(dataOfThisFrame.X(), dataOfThisFrame.Y());
-    this.setSize(dataOfThisFrame.width(), dataOfThisFrame.height());
-    this.setIcon(dataOfThisFrame.Icon());
-    System.out.println("dataOfThisFrame.Icon(): " + dataOfThisFrame.Icon());
-    System.out.println("Start: logWindow isIcon " + this.isIcon());
-
-  }
-
-  @Override
-  public void save() throws IOException, BackingStoreException {
-    Preferences userPrefs = Preferences.userNodeForPackage(PreferencesDemo.class);
-    OutputStream osTree = new BufferedOutputStream(
-        new FileOutputStream(
-            System.getProperty("user.home") + "\\Preferencess\\" + this.getName()
-                + ".xml"));
-    userPrefs.putInt("X", this.getX());
-    userPrefs.putInt("Y", this.getY());
-    userPrefs.putInt("width", this.getWidth());
-    userPrefs.putInt("height", this.getHeight());
-    System.out.println("Finish: logWindow isIcon " + this.isIcon());
-    userPrefs.putBoolean("Icon", this.isIcon());
-    userPrefs.put("name", this.getName());
-    userPrefs.exportSubtree(osTree);
-    osTree.close();
   }
 }

@@ -6,9 +6,8 @@ import java.util.prefs.BackingStoreException;
 
 public interface Changeable {
 
-  public void load() throws PropertyVetoException;
+  void load() throws PropertyVetoException;
 
-  public void save() throws IOException, BackingStoreException;
-
+  void save() throws IOException, BackingStoreException;
 
 }
